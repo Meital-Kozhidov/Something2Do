@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /******************************************************************************/
 
 public class TaskManager {
-  private List<Task> completedTasks;
+  // private List<Task> completedTasks;
   private List<Task> wishlistTasks;
   private List<User> users;
 
@@ -27,12 +27,12 @@ public class TaskManager {
     this.wishlistTasks = wishlistTasks;
   }
 
-  public List<Task> getCompletedTasks () {
-    return this.completedTasks;
-  }
-   public void setCompletedTasks(List<Task> completedTasks) {
-    this.completedTasks = completedTasks;
-  }
+  // public List<Task> getCompletedTasks () {
+  //   return this.completedTasks;
+  // }
+  //  public void setCompletedTasks(List<Task> completedTasks) {
+  //   this.completedTasks = completedTasks;
+  // }
 
   /****************************************************************************/
 
@@ -43,39 +43,48 @@ public class TaskManager {
 
 		Collections.shuffle(filteredTasks);
 
-    return this.wishlistTasks.subList(0, amount);
+    return filteredTasks.subList(0, amount);
   }
 
-  public void updateTaskStatus(String key, String userName, String status) {
-     User user = getUserByName(userName);
+  public void updateTaskStatus(String key, String userName, String status)  throws Exception {
+    User user = getUserByName(userName);
 
     Task task = this.wishlistTasks.stream()
             .filter(item -> item.getKey().equals(key)).limit(1)
             .collect(Collectors.toList())
             .get(0);
 
-    if (status.equals("complete")) {
-      user.setTaskAsCompleted(task);
-    } else if (status.equals("wishlist")) {
-      user.setTaskAsWishList(task);
+    switch (status) {
+      case "complete":
+        user.setTaskAsCompleted(task);
+        break;
+      case "wishlist":
+        user.setTaskAsWishList(task);
+        break;
+      default:
+        throw getInvalidStatusException();
     }
-
-    //throw
   }
 
-  public List<Task> getUserTasks(String userName, String status) {
+  public List<Task> getUserTasks(String userName, String status) 
+  throws Exception {
     User user = getUserByName(userName);
 
-    if (status.equals("complete")) {
-      return user.getCompletedTasks();
-    } else if (status.equals("wishlist")) {
-      return user.getWishlistTasks();
+    switch (status) {
+      case "complete":
+        return user.getCompletedTasks();
+      case "wishlist":
+        return user.getWishlistTasks();
+      case "":
+        return Stream.concat(user.getCompletedTasks().stream(), 
+                            user.getWishlistTasks().stream())
+                     .toList();
+      default:
+        throw getInvalidStatusException();
     }
-    return Stream.concat(user.getCompletedTasks().stream(), 
-                         user.getWishlistTasks().stream())
-                 .toList();
-   
   }
+
+  /****************************************************************************/
 
   private User getUserByName(String userName) {
     List<User> users = this.users.stream()
@@ -92,5 +101,9 @@ public class TaskManager {
     }
 
     return user;
+  }
+
+  private Exception getInvalidStatusException() {
+    return new Exception("Status is not a valid option");
   }
 }

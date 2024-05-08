@@ -76,22 +76,19 @@ public class TaskController {
 		return this.taskManager.getRandomTasks(amount, type);
 	}
 
-	// @GetMapping("/tasks/rated")
-	// public ResponseEntity<Task[]> getIncompleteTasksRated(@PathVariable ("amount") Integer amount,@RequestParam(name = "type",required = false) String type){
-	// 	throw  new NotImplementedException();
-	// }
-
 	/**
 	 * Update task status for user
 	 * @param user name of the user to update the task for
 	 * @param status status of the task - 'complete' or 'wishlist'
 	 * @param key task's key
+	 * @throws Exception 
 	 */
 	@PatchMapping("/tasks/{user}")
 	public void updateTaskStatus(
 		@PathVariable ("user") String user, 
 		@RequestParam(name = "status", required = true) String status,
-		@RequestParam(name = "key", required = true) String key){
+		@RequestParam(name = "key", required = true) String key) 
+		throws Exception {
 			this.taskManager.updateTaskStatus(key, user, status);
 	}
 
@@ -106,8 +103,8 @@ public class TaskController {
 	@GetMapping("/tasks/{user}")
 	public List<Task> getAllTasks(
 		@PathVariable ("user") String user,
-		@RequestParam(name = "status",required = false) String status) {
-		return this.taskManager.getUserTasks(user, status);
+		@RequestParam(name = "status",required = false, defaultValue = "") String status) throws Exception {
+			return this.taskManager.getUserTasks(user, status);
 	}
 
 	/****************************************************************************/
