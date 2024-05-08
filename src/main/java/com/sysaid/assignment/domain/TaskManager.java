@@ -39,7 +39,7 @@ public class TaskManager {
   public List<Task> getRandomTasks(Integer amount , String type) {
     List<Task> filteredTasks = this.wishlistTasks.stream()
             .filter(item -> item.getType().equals(type))
-            .collect(Collectors.toList());
+            .toList();
 
 		Collections.shuffle(filteredTasks);
 
@@ -81,7 +81,7 @@ public class TaskManager {
     List<User> users = this.users.stream()
               .filter(item -> item.getName().equals(userName))
               .limit(1)
-              .collect(Collectors.toList());
+              .toList();
 
     User user;
     if (users.size() == 0) {

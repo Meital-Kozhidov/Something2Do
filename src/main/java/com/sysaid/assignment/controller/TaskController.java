@@ -4,6 +4,8 @@ import com.sysaid.assignment.domain.Task;
 import com.sysaid.assignment.domain.TaskManager;
 import com.sysaid.assignment.domain.TaskOfTheDay;
 import com.sysaid.assignment.service.TaskServiceImpl;
+
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 @RestController
 public class TaskController {
 
+	private final TaskServiceImpl taskService;
 	private TaskOfTheDay taskOfTheDay;
 	private TaskManager taskManager;
 
@@ -30,14 +33,30 @@ public class TaskController {
 	 * @param taskService
 	 */
 	public TaskController(TaskServiceImpl taskService) {
-		this.taskOfTheDay = new TaskOfTheDay(taskService.getRandomTask().getBody());
+		this.taskService = taskService;
+		this.taskOfTheDay = new TaskOfTheDay(getNewRandomTask());
 
 		List<Task> incompleteTasks = new ArrayList<Task>();
 
+		//TODO: get pool number as param
 		for (int i = 0; i < 20; ++i) {
-			incompleteTasks.add(taskService.getRandomTask().getBody());
+			incompleteTasks.add(getNewRandomTask());
 		}
 		this.taskManager = new TaskManager(incompleteTasks);
+	}
+
+	private Task getNewRandomTask() {
+		return this.taskService.getRandomTask().getBody();
+	}
+
+	//TODO: better location
+	/**
+	 * Scheduled job to run everyday at midnight, fetching a new task 
+	 * and updating the task of the day
+	 */
+	@Scheduled(cron = "0 0 0 * * *")
+	public void scheduleFixedDelayTask() {
+		this.taskOfTheDay.setRandomOption(getNewRandomTask());
 	}
 
 	/****************************************************************************/
