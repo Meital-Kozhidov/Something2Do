@@ -43,6 +43,4 @@ public class User {
   public void setTaskAsWishList(Task task) {
     this.wishlistTasks.add(task);
   }
-
-  
 }

@@ -3,12 +3,12 @@ package com.sysaid.assignment.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /******************************************************************************/
 
 public class TaskManager {
-  // private List<Task> completedTasks;
   private List<Task> wishlistTasks;
   private List<User> users;
 
@@ -26,21 +26,36 @@ public class TaskManager {
     this.wishlistTasks = wishlistTasks;
   }
 
-  /****************************************************************************/
+  /**
+   * @throws Exception **************************************************************************/
 
-  public List<Task> getRandomTasks(Integer amount , String type) {
-    List<Task> filteredTasks = this.wishlistTasks.stream()
-            .filter(item -> item.getType().equals(type))
-            .toList();
+  public List<Task> getTasks(Integer amount , String type, String option) throws Exception {
+    switch (option) {
+      case "random":
+        return this.getRandomTasks(amount, type);
+      case "rated":
+        return RatedOption.getRatedTasks(this.wishlistTasks, amount);
+      default:
+        throw new Exception("Invalid option - random or rated");
+       
+    }
+  }
+
+  private List<Task> getRandomTasks(Integer amount , String type) throws Exception {
+    List<Task> filteredTasks = this.wishlistTasks;
+    if (!type.equals("")) {
+      filteredTasks = this.wishlistTasks.stream()
+              .filter(item -> type.equals(""))
+              .collect(Collectors.toList());
+    }
 
 		Collections.shuffle(filteredTasks);
 
-    return filteredTasks.subList(0, amount);
-  }
-
-  public List<Task> getRatedTasks(Integer amount , String type) {
-    //TODO
-    return this.wishlistTasks;
+    try {
+      return filteredTasks.subList(0, amount);
+    } catch (Exception e) {
+      throw new Exception("This amount of tasks of requested type do not exist (did you specify amount? default is 10)");
+    }
   }
 
   public void updateTaskStatus(String key, String userName, String status)  throws Exception {
@@ -48,15 +63,17 @@ public class TaskManager {
 
     Task task = this.wishlistTasks.stream()
             .filter(item -> item.getKey().equals(key)).limit(1)
-            .toList()
+            .collect(Collectors.toList())
             .get(0);
 
     switch (status) {
       case "complete":
         user.setTaskAsCompleted(task);
+        task.incrementRating(2);
         break;
       case "wishlist":
         user.setTaskAsWishList(task);
+        task.incrementRating(1);
         break;
       default:
         throw getInvalidStatusException();
@@ -87,7 +104,7 @@ public class TaskManager {
     List<User> users = this.users.stream()
               .filter(item -> item.getName().equals(userName))
               .limit(1)
-              .toList();
+              .collect(Collectors.toList());
 
     User user;
     if (users.size() == 0) {

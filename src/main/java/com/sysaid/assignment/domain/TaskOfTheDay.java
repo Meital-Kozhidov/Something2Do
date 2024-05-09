@@ -3,27 +3,19 @@ package com.sysaid.assignment.domain;
 /******************************************************************************/
 
 public class TaskOfTheDay {
-  private Task randomOption;
-  private Task ratedOption;
+  private Task task;
 
-  public TaskOfTheDay(Task randomOption) {
-    this.randomOption = randomOption;
+  public TaskOfTheDay(Task task) {
+    this.task = task;
   }
 
   /****************************************************************************/
 
 
-  public Task getRandomOption () {
-    return this.randomOption;
+  public Task getTask () {
+    return this.task;
   }
-  public void setRandomOption(Task randomOption) {
-    this.randomOption = randomOption;
-  }
-
-  public Task getRatedOption () {
-    return this.ratedOption;
-  }
-  public void setRatedOption(Task ratedOption) {
-    this.ratedOption = ratedOption;
+  public void setTask(Task task) {
+    this.task = task;
   }
 }

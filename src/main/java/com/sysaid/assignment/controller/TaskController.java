@@ -56,7 +56,7 @@ public class TaskController {
 	 */
 	@Scheduled(cron = "0 0 0 * * *")
 	public void scheduleFixedDelayTask() {
-		this.taskOfTheDay.setRandomOption(getNewRandomTask());
+		this.taskOfTheDay.setTask(getNewRandomTask());
 	}
 
 	/****************************************************************************/
@@ -75,14 +75,7 @@ public class TaskController {
 		@RequestParam(name = "type",required = false, defaultValue = "") String type,
 		@RequestParam(name = "option",required = false, defaultValue = "random") String option
 	) throws Exception{
-		switch (option) {
-				case "rated":
-					return this.taskManager.getRatedTasks(amount, type);
-				case "random":
-					return this.taskManager.getRandomTasks(amount, type);
-				default:
-					throw new Exception("Non existing option for task - rated or random");	
-			}
+			return this.taskManager.getTasks(amount, type, option);
 	}
 
 	/**
@@ -127,14 +120,7 @@ public class TaskController {
 	@GetMapping("/tasks/task-of-the-day")
 	public  Task getRandomTaskOfTheDay(
 		@RequestParam(name = "option",required = false, defaultValue = "random") String option) throws Exception {
-			switch (option) {
-				case "rated":
-					return this.taskOfTheDay.getRatedOption();
-				case "random":
-					return this.taskOfTheDay.getRandomOption();
-				default:
-					throw new Exception("Non existing option for task - rated or random");	
-			}
+			return this.taskOfTheDay.getTask();
 	}
 }
 
