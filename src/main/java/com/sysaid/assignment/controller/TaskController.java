@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /******************************************************************************/
 
@@ -35,14 +34,12 @@ public class TaskController {
 	public TaskController(TaskServiceImpl taskService) {
 		this.taskService = taskService;
 		this.taskOfTheDay = new TaskOfTheDay(getNewRandomTask());
-
-		List<Task> incompleteTasks = new ArrayList<Task>();
-
+		
+		this.taskManager = new TaskManager();
 		//TODO: get pool number as param
 		for (int i = 0; i < 20; ++i) {
-			incompleteTasks.add(getNewRandomTask());
+			this.taskManager.addWishlistTask(getNewRandomTask());
 		}
-		this.taskManager = new TaskManager(incompleteTasks);
 	}
 
 	private Task getNewRandomTask() {
