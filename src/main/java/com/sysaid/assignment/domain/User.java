@@ -29,15 +29,9 @@ public class User {
   public List<Task> getWishlistTasks () {
     return this.wishlistTasks;
   }
-  public void setWishlistTasks(List<Task> wishlistTasks) {
-    this.wishlistTasks = wishlistTasks;
-  }
 
   public List<Task> getCompletedTasks () {
     return this.completedTasks;
-  }
-   public void setCompletedTasks(List<Task> completedTasks) {
-    this.completedTasks = completedTasks;
   }
 
   /****************************************************************************/

@@ -65,31 +65,40 @@ public class TaskController {
 	 * Return incomplete tasks, filtered to the requested type,
 	 * in the requested amount.
 	 * @param amount tasks amount - default is 10
-	 * @param type task type to filter by - default is none
+	 * @param type task type to filter by - default is not filtered
 	 * @return list of tasks
+	 * @throws Exception 
 	 */
 	@GetMapping("/tasks")
 	public List<Task> getIncompleteTasks(
 		@RequestParam(name = "amount",required = false, defaultValue = "10") Integer amount,
-		@RequestParam(name = "type",required = false, defaultValue = "") String type
-	){
-		return this.taskManager.getRandomTasks(amount, type);
+		@RequestParam(name = "type",required = false, defaultValue = "") String type,
+		@RequestParam(name = "option",required = false, defaultValue = "random") String option
+	) throws Exception{
+		switch (option) {
+				case "rated":
+					return this.taskManager.getRatedTasks(amount, type);
+				case "random":
+					return this.taskManager.getRandomTasks(amount, type);
+				default:
+					throw new Exception("Non existing option for task - rated or random");	
+			}
 	}
 
 	/**
 	 * Update task status for user
-	 * @param user name of the user to update the task for
+	 * @param username name of the user to update the task for
 	 * @param status status of the task - 'complete' or 'wishlist'
 	 * @param key task's key
 	 * @throws Exception 
 	 */
-	@PatchMapping("/tasks/{user}")
+	@PatchMapping("/tasks/{username}")
 	public void updateTaskStatus(
-		@PathVariable ("user") String user, 
+		@PathVariable ("username") String username, 
 		@RequestParam(name = "status", required = true) String status,
 		@RequestParam(name = "key", required = true) String key) 
 		throws Exception {
-			this.taskManager.updateTaskStatus(key, user, status);
+			this.taskManager.updateTaskStatus(key, username, status);
 	}
 
 
@@ -100,32 +109,32 @@ public class TaskController {
 	 * default is no filter.
 	 * @return user's tasks
 	 */
-	@GetMapping("/tasks/{user}")
+	@GetMapping("/tasks/{username}")
 	public List<Task> getAllTasks(
-		@PathVariable ("user") String user,
+		@PathVariable ("username") String username,
 		@RequestParam(name = "status",required = false, defaultValue = "") String status) throws Exception {
-			return this.taskManager.getUserTasks(user, status);
+			return this.taskManager.getUserTasks(username, status);
 	}
 
 	/****************************************************************************/
 	
 	/**
 	 * Return the random task of the day
-	 * @return random task (same task for all users)
+	 * @param rated should get the rated task of the day instead the random
+	 * @return
+	 * @throws Exception 
 	 */
 	@GetMapping("/tasks/task-of-the-day")
-	public  Task getRandomTaskOfTheDay(){
-		return this.taskOfTheDay.getRandomOption();
-	}
-
-	/**
-	 * Return the rated task of the day
-	 * @return the rated option for the task of the day
-	 */
-	@GetMapping("/tasks/task-of-the-day/rated")
-	public  Task getRatedTaskOfTheDay(){
-		//TODO: implement
-		return this.taskOfTheDay.getRatedOption();
+	public  Task getRandomTaskOfTheDay(
+		@RequestParam(name = "option",required = false, defaultValue = "random") String option) throws Exception {
+			switch (option) {
+				case "rated":
+					return this.taskOfTheDay.getRatedOption();
+				case "random":
+					return this.taskOfTheDay.getRandomOption();
+				default:
+					throw new Exception("Non existing option for task - rated or random");	
+			}
 	}
 }
 

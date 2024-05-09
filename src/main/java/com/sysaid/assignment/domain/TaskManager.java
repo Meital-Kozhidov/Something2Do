@@ -19,19 +19,12 @@ public class TaskManager {
 
   /****************************************************************************/
 
-   public List<Task> getWishlistTasks () {
+  public List<Task> getWishlistTasks () {
     return this.wishlistTasks;
   }
   public void setWishlistTasks(List<Task> wishlistTasks) {
     this.wishlistTasks = wishlistTasks;
   }
-
-  // public List<Task> getCompletedTasks () {
-  //   return this.completedTasks;
-  // }
-  //  public void setCompletedTasks(List<Task> completedTasks) {
-  //   this.completedTasks = completedTasks;
-  // }
 
   /****************************************************************************/
 
@@ -43,6 +36,11 @@ public class TaskManager {
 		Collections.shuffle(filteredTasks);
 
     return filteredTasks.subList(0, amount);
+  }
+
+  public List<Task> getRatedTasks(Integer amount , String type) {
+    //TODO
+    return this.wishlistTasks;
   }
 
   public void updateTaskStatus(String key, String userName, String status)  throws Exception {
