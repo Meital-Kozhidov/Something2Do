@@ -110,13 +110,10 @@ public class TaskController {
 	
 	/**
 	 * Return the random task of the day
-	 * @param rated should get the rated task of the day instead the random
-	 * @return
-	 * @throws Exception 
+	 * @return task of the day
 	 */
 	@GetMapping("/tasks/task-of-the-day")
-	public  Task getRandomTaskOfTheDay(
-		@RequestParam(name = "option",required = false, defaultValue = "random") String option) throws Exception {
+	public  Task getRandomTaskOfTheDay() {
 			return this.taskOfTheDay.getTask();
 	}
 }
