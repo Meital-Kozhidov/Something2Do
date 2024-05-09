@@ -3,7 +3,6 @@ package com.sysaid.assignment.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /******************************************************************************/
@@ -51,7 +50,7 @@ public class TaskManager {
 
     Task task = this.wishlistTasks.stream()
             .filter(item -> item.getKey().equals(key)).limit(1)
-            .collect(Collectors.toList())
+            .toList()
             .get(0);
 
     switch (status) {
