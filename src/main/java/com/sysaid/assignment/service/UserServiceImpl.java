@@ -6,6 +6,8 @@ import com.sysaid.assignment.domain.User;
 import com.sysaid.assignment.domain.UserManager;
 import com.sysaid.assignment.exception.DuplicatedUserException;
 
+/******************************************************************************/
+
 @Service
 public class UserServiceImpl implements IUserService {
 

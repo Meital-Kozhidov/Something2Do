@@ -3,6 +3,7 @@ package com.sysaid.assignment.service;
 import com.sysaid.assignment.domain.Task;
 import com.sysaid.assignment.domain.TaskManager;
 import com.sysaid.assignment.domain.TaskOfTheDay;
+import com.sysaid.assignment.exception.FetchTaskException;
 
 import java.util.List;
 
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+/******************************************************************************/
+
 @Service
 public class TaskServiceImpl implements ITaskService {
 
@@ -18,23 +21,26 @@ public class TaskServiceImpl implements ITaskService {
     private final TaskManager taskManager;
     private final String baseUrl;
 
-    public TaskServiceImpl(@Value("${external.boredapi.baseURL}") String baseUrl) {
+    public TaskServiceImpl(
+        @Value("${external.boredapi.baseURL}") String baseUrl
+    ) {
         this.baseUrl = baseUrl;
-        this.taskOfTheDay = TaskOfTheDay.getInstance(this::getNewRandomTask);
-        this.taskManager = TaskManager.getInstance(this::getNewRandomTask);
+        this.taskOfTheDay = TaskOfTheDay.getInstance(this::getRandomTask);
+        this.taskManager = TaskManager.getInstance(this::getRandomTask);
     }
 
-    private Task getNewRandomTask() {
-        return getRandomTask().getBody();
-    }
-
-    public ResponseEntity<Task> getRandomTask() {
+    public Task getRandomTask() {
         String endpointUrl = String.format("%s/activity", baseUrl);
 
         RestTemplate template = new RestTemplate();
         ResponseEntity<Task> responseEntity = template.getForEntity(endpointUrl, Task.class);
 
-        return responseEntity;
+        //TODO: what happens if it's thrown?
+        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+            throw new FetchTaskException();
+        } 
+
+        return responseEntity.getBody();
     }
 
     public List<Task> getTasks(Integer amount, String type, String option) {

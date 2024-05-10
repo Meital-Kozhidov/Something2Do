@@ -40,4 +40,10 @@ public class GlobalExceptionHandler {
     (DuplicatedUserException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }    
+
+    @ExceptionHandler(FetchTaskException.class)
+    public ResponseEntity<String> FetchTaskException
+    (FetchTaskException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }    
 }
