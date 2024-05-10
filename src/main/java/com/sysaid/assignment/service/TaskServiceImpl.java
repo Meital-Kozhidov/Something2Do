@@ -1,16 +1,32 @@
 package com.sysaid.assignment.service;
 
 import com.sysaid.assignment.domain.Task;
+import com.sysaid.assignment.domain.TaskManager;
+import com.sysaid.assignment.domain.TaskOfTheDay;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class TaskServiceImpl implements  ITaskService{
+public class TaskServiceImpl implements ITaskService {
 
-    @Value("${external.boredapi.baseURL}")
-    private String baseUrl;
+    private final TaskOfTheDay taskOfTheDay;
+    private final TaskManager taskManager;
+    private final String baseUrl;
+
+    public TaskServiceImpl(@Value("${external.boredapi.baseURL}") String baseUrl) {
+        this.baseUrl = baseUrl;
+        this.taskOfTheDay = TaskOfTheDay.getInstance(this::getNewRandomTask);
+        this.taskManager = TaskManager.getInstance(this::getNewRandomTask);
+    }
+
+    private Task getNewRandomTask() {
+        return getRandomTask().getBody();
+    }
 
     public ResponseEntity<Task> getRandomTask() {
         String endpointUrl = String.format("%s/activity", baseUrl);
@@ -20,4 +36,22 @@ public class TaskServiceImpl implements  ITaskService{
 
         return responseEntity;
     }
+
+    public List<Task> getTasks(Integer amount, String type, String option) {
+        return this.taskManager.getTasks(amount, type, option);
+    }
+
+    public void updateTaskStatus(String key, String username, String status) {
+        this.taskManager.updateTaskStatus(key, username, status);
+        // return task 
+    }
+
+    public List<Task> getUserTasks(String username, String status) {
+        return this.taskManager.getUserTasks(username, status);
+    }
+
+    public Task getTaskOfTheDay() {
+        return this.taskOfTheDay.getTask();
+    }
 }
+

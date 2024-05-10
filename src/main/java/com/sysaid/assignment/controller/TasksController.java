@@ -1,8 +1,6 @@
 package com.sysaid.assignment.controller;
 
 import com.sysaid.assignment.domain.Task;
-import com.sysaid.assignment.domain.TaskManager;
-import com.sysaid.assignment.domain.TaskOfTheDay;
 import com.sysaid.assignment.enums.OptionEnum;
 import com.sysaid.assignment.enums.StatusEnum;
 import com.sysaid.assignment.exception.InvalidAmountException;
@@ -11,6 +9,8 @@ import com.sysaid.assignment.exception.InvalidOptionException;
 import com.sysaid.assignment.exception.InvalidStatusException;
 import com.sysaid.assignment.service.TaskServiceImpl;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,8 +29,6 @@ import java.util.List;
 public class TasksController {
 
 	private final TaskServiceImpl taskService;
-	private final TaskOfTheDay taskOfTheDay;
-	private final TaskManager taskManager;
 
 	/**
 	 * constructor for dependency injection
@@ -38,12 +36,6 @@ public class TasksController {
 	 */
 	public TasksController(TaskServiceImpl taskService) {
 		this.taskService = taskService;
-		this.taskOfTheDay = TaskOfTheDay.getInstance(this::getNewRandomTask);
-		this.taskManager = TaskManager.getInstance(this::getNewRandomTask);
-	}
-
-	private Task getNewRandomTask() {
-		return this.taskService.getRandomTask().getBody();
 	}
 
 	/****************************************************************************/
@@ -58,7 +50,7 @@ public class TasksController {
 	 * @throws InvalidOptionException
 	 */
 	@GetMapping("/tasks")
-	public List<Task> getIncompleteTasks(
+	public ResponseEntity<List<Task>> getIncompleteTasks(
 		@RequestParam(name = "amount",required = false, defaultValue = "10") Integer amount,
 		@RequestParam(name = "type",required = false, defaultValue = "") String type,
 		@RequestParam(name = "option",required = false) String option
@@ -66,7 +58,7 @@ public class TasksController {
 		if (option == null) {
 			option = OptionEnum.RANDOM.get();
 		}
-		return this.taskManager.getTasks(amount, type, option);
+			return ResponseEntity.ok(this.taskService.getTasks(amount, type, option));
 	}
 
 	/**
@@ -78,12 +70,13 @@ public class TasksController {
 	 * @throws InvalidKeyException 
 	 */
 	@PatchMapping("/tasks/{username}")
-	public void updateTaskStatus(
+	public ResponseEntity<String> updateTaskStatus(
 		@PathVariable ("username") String username, 
 		@RequestParam(name = "status", required = true) String status,
 		@RequestParam(name = "key", required = true) String key) 
 		throws InvalidStatusException, NotFoundKeyException {
-			this.taskManager.updateTaskStatus(key, username, status);
+			this.taskService.updateTaskStatus(key, username, status);
+			return ResponseEntity.status(HttpStatus.OK).body("updated");
 	}
 
 
@@ -96,13 +89,13 @@ public class TasksController {
 	 * @throws InvalidStatusException
 	 */
 	@GetMapping("/tasks/{username}")
-	public List<Task> getAllTasks(
+	public ResponseEntity<List<Task>> getUserTasks(
 		@PathVariable ("username") String username,
 		@RequestParam(name = "status",required = false) String status) throws InvalidStatusException {
 			if (status == null) {
 				status = StatusEnum.ALL.get();
 			}
-			return this.taskManager.getUserTasks(username, status);
+			return ResponseEntity.ok(this.taskService.getUserTasks(username, status));
 	}
 
 	/****************************************************************************/
@@ -112,8 +105,8 @@ public class TasksController {
 	 * @return task of the day
 	 */
 	@GetMapping("/tasks/task-of-the-day")
-	public  Task getRandomTaskOfTheDay() {
-			return this.taskOfTheDay.getTask();
+	public ResponseEntity<Task> getRandomTaskOfTheDay() {
+		return ResponseEntity.ok(this.taskService.getTaskOfTheDay());
 	}
 }
 
