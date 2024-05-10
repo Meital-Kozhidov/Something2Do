@@ -65,16 +65,6 @@ public class TaskManager {
     }
   }
 
-  private Task findTaskByKey(String key) {
-    try {
-      return this.wishlistTasks.stream()
-              .filter(item -> item.getKey().equals(key)).limit(1)
-              .collect(Collectors.toList())
-              .get(0);
-    } catch (Exception e) { //TODO: check what is thrown here
-      throw new NotFoundKeyException();
-    }
-  }
 
   private List<Task> getRandomTasks(Integer amount , String type) 
   throws InvalidAmountException {
@@ -138,6 +128,19 @@ public class TaskManager {
       }
     } catch (Exception e) {
         throw new InvalidStatusException();
+    }
+  }
+
+  /****************************************************************************/
+  
+  private Task findTaskByKey(String key) {
+    try {
+      return this.wishlistTasks.stream()
+              .filter(item -> item.getKey().equals(key)).limit(1)
+              .collect(Collectors.toList())
+              .get(0);
+    } catch (Exception e) { //TODO: check what is thrown here
+      throw new NotFoundKeyException();
     }
   }
 }

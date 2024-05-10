@@ -47,7 +47,6 @@ public class RatedOption {
             }
         }
 
-        return null;
-
+        return null; //TODO?
     }
 }
