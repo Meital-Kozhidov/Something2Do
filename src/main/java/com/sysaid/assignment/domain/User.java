@@ -8,8 +8,8 @@ import java.util.List;
 public class User {
 
   private String name;
-  private List<Task> wishlistTasks;
-  private List<Task> completedTasks;
+  private final List<Task> wishlistTasks;
+  private final List<Task> completedTasks;
 
   public User(String name) {
     this.name = name;

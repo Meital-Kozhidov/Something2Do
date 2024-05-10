@@ -3,9 +3,12 @@ package com.sysaid.assignment.controller;
 import com.sysaid.assignment.domain.Task;
 import com.sysaid.assignment.domain.TaskManager;
 import com.sysaid.assignment.domain.TaskOfTheDay;
+import com.sysaid.assignment.exception.InvalidAmountException;
+import com.sysaid.assignment.exception.InvalidKeyException;
+import com.sysaid.assignment.exception.InvalidOptionException;
+import com.sysaid.assignment.exception.InvalidStatusException;
 import com.sysaid.assignment.service.TaskServiceImpl;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,8 +27,8 @@ import java.util.List;
 public class TaskController {
 
 	private final TaskServiceImpl taskService;
-	private TaskOfTheDay taskOfTheDay;
-	private TaskManager taskManager;
+	private final TaskOfTheDay taskOfTheDay;
+	private final TaskManager taskManager;
 
 	/**
 	 * constructor for dependency injection
@@ -33,27 +36,12 @@ public class TaskController {
 	 */
 	public TaskController(TaskServiceImpl taskService) {
 		this.taskService = taskService;
-		this.taskOfTheDay = new TaskOfTheDay(getNewRandomTask());
-		
-		this.taskManager = new TaskManager();
-		//TODO: get pool number as param
-		for (int i = 0; i < 20; ++i) {
-			this.taskManager.addWishlistTask(getNewRandomTask());
-		}
+		this.taskOfTheDay = TaskOfTheDay.getInstance(this::getNewRandomTask);
+		this.taskManager = TaskManager.getInstance(this::getNewRandomTask);
 	}
 
 	private Task getNewRandomTask() {
 		return this.taskService.getRandomTask().getBody();
-	}
-
-	//TODO: better location
-	/**
-	 * Scheduled job to run everyday at midnight, fetching a new task 
-	 * and updating the task of the day
-	 */
-	@Scheduled(cron = "0 0 0 * * *")
-	public void scheduleFixedDelayTask() {
-		this.taskOfTheDay.setTask(getNewRandomTask());
 	}
 
 	/****************************************************************************/
@@ -64,14 +52,14 @@ public class TaskController {
 	 * @param amount tasks amount - default is 10
 	 * @param type task type to filter by - default is not filtered
 	 * @return list of tasks
-	 * @throws Exception 
+	 * @throws InvalidAmountException, InvalidOptionException
 	 */
 	@GetMapping("/tasks")
 	public List<Task> getIncompleteTasks(
 		@RequestParam(name = "amount",required = false, defaultValue = "10") Integer amount,
 		@RequestParam(name = "type",required = false, defaultValue = "") String type,
 		@RequestParam(name = "option",required = false, defaultValue = "random") String option
-	) throws Exception{
+	) throws InvalidAmountException , InvalidOptionException {
 			return this.taskManager.getTasks(amount, type, option);
 	}
 
@@ -80,14 +68,14 @@ public class TaskController {
 	 * @param username name of the user to update the task for
 	 * @param status status of the task - 'complete' or 'wishlist'
 	 * @param key task's key
-	 * @throws Exception 
+	 * @throws InvalidStatusException, InvalidKeyException 
 	 */
 	@PatchMapping("/tasks/{username}")
 	public void updateTaskStatus(
 		@PathVariable ("username") String username, 
 		@RequestParam(name = "status", required = true) String status,
 		@RequestParam(name = "key", required = true) String key) 
-		throws Exception {
+		throws InvalidStatusException, InvalidKeyException {
 			this.taskManager.updateTaskStatus(key, username, status);
 	}
 
@@ -98,11 +86,12 @@ public class TaskController {
 	 * @param status status of the task - 'complete' or 'wishlist'.
 	 * default is no filter.
 	 * @return user's tasks
+	 * @throws InvalidStatusException
 	 */
 	@GetMapping("/tasks/{username}")
 	public List<Task> getAllTasks(
 		@PathVariable ("username") String username,
-		@RequestParam(name = "status",required = false, defaultValue = "") String status) throws Exception {
+		@RequestParam(name = "status",required = false, defaultValue = "") String status) throws InvalidStatusException {
 			return this.taskManager.getUserTasks(username, status);
 	}
 

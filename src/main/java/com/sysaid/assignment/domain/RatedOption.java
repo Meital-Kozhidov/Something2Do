@@ -10,18 +10,23 @@ import java.util.Random;
 public class RatedOption {
 
     private static final Random random = new Random();
+    private List<Task> tasks;
 
-    public static List<Task> getRatedTasks(List<Task> tasks, Integer amount) {
+    public RatedOption(List<Task> tasks) {
+      this.tasks = tasks;
+    }
+
+    public List<Task> getRatedTasks(Integer amount) {
       List<Task> ratedTasks = new ArrayList<Task>(); 
       for (int i = 0; i < amount; ++i) {
-        ratedTasks.add(getRatedTask(tasks));
+        ratedTasks.add(getRatedTask());
       }
 
       return ratedTasks;
     }
 
-    private static Task getRatedTask(List<Task> tasks) {
-        tasks.sort(Comparator.comparingInt(Task::getRating).reversed());
+    private Task getRatedTask() {
+        this.tasks.sort(Comparator.comparingInt(Task::getRating).reversed());
 
         int totalProbability = 100;
 
@@ -36,14 +41,13 @@ public class RatedOption {
 
         int randomNumber = random.nextInt(totalProbability);
 
-        Task selectedTask = null;
         for (int i = 0; i < probabilityRanges.length - 1; i++) {
             if (randomNumber >= probabilityRanges[i] && randomNumber < probabilityRanges[i + 1]) {
-                selectedTask = tasks.get(i);
-                break;
+                return tasks.get(i);
             }
         }
 
-        return selectedTask;
+        return null;
+
     }
 }

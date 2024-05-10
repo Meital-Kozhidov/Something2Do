@@ -24,7 +24,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidKeyException.class)
-    public ResponseEntity<String> handleInvalidKeyException(InvalidKeyException ex) {
+    public ResponseEntity<String> handleInvalidKeyException
+    (InvalidKeyException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
