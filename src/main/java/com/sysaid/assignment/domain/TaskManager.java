@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.sysaid.assignment.enums.OptionEnum;
+import com.sysaid.assignment.enums.StatusEnum;
 import com.sysaid.assignment.exception.InvalidAmountException;
 import com.sysaid.assignment.exception.InvalidOptionException;
 import com.sysaid.assignment.exception.InvalidStatusException;
@@ -46,14 +48,20 @@ public class TaskManager {
   }
 
   public List<Task> getTasks(Integer amount , String type, String option) throws InvalidOptionException, InvalidAmountException {
-    switch (option) {
-      case "random":
-        return this.getRandomTasks(amount, type);
-      case "rated":
-        return this.ratedOption.getRatedTasks(amount);
-      default:
-        throw new InvalidOptionException();
-       
+
+    try {
+      OptionEnum optionEnum = OptionEnum.valueOf(option.toUpperCase());
+
+      switch (optionEnum) {
+        case RANDOM:
+          return this.getRandomTasks(amount, type);
+        case RATED:
+          return this.ratedOption.getRatedTasks(amount);
+        default:
+          throw new InvalidOptionException();
+      }
+    } catch (Exception e) {
+      throw new InvalidOptionException();
     }
   }
 
@@ -84,20 +92,25 @@ public class TaskManager {
               .filter(item -> item.getKey().equals(key)).limit(1)
               .collect(Collectors.toList())
               .get(0);
-    } catch (Exception e) {
+    } catch (Exception e) { //TODO: check what is thrown here
       throw new InvalidKeyException();
     }
 
-    switch (status) {
-      case "complete":
-        user.setTaskAsCompleted(task);
-        task.incrementRating(2);
-        break;
-      case "wishlist":
-        user.setTaskAsWishList(task);
-        task.incrementRating(1);
-        break;
-      default:
+    try {
+      StatusEnum statusEnum = StatusEnum.valueOf(status.toUpperCase());
+      switch (statusEnum) {
+        case COMPLETE:
+          user.setTaskAsCompleted(task);
+          task.incrementRating(2);
+          break;
+        case WISHLIST:
+          user.setTaskAsCompleted(task);
+          task.incrementRating(2);
+          break;
+        default:
+          throw new InvalidStatusException();
+      }
+    } catch (Exception e) {
         throw new InvalidStatusException();
     }
   }
@@ -106,16 +119,21 @@ public class TaskManager {
   throws InvalidStatusException {
     User user = getUserByUsername(userName);
 
-    switch (status) {
-      case "complete":
-        return user.getCompletedTasks();
-      case "wishlist":
-        return user.getWishlistTasks();
-      case "":
-        return Stream.concat(user.getCompletedTasks().stream(), 
-                            user.getWishlistTasks().stream())
-                     .toList();
-      default:
+    try {
+      StatusEnum statusEnum = StatusEnum.valueOf(status.toUpperCase());
+      switch (statusEnum) {
+        case COMPLETE:
+          return user.getCompletedTasks();
+        case WISHLIST:
+          return user.getWishlistTasks();
+        case ALL:
+          return Stream.concat(user.getCompletedTasks().stream(), 
+                    user.getWishlistTasks().stream())
+                    .toList();
+        default:
+          throw new InvalidStatusException();
+      }
+    } catch (Exception e) {
         throw new InvalidStatusException();
     }
   }

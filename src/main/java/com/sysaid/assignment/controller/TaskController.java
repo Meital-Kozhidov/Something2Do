@@ -3,6 +3,8 @@ package com.sysaid.assignment.controller;
 import com.sysaid.assignment.domain.Task;
 import com.sysaid.assignment.domain.TaskManager;
 import com.sysaid.assignment.domain.TaskOfTheDay;
+import com.sysaid.assignment.enums.OptionEnum;
+import com.sysaid.assignment.enums.StatusEnum;
 import com.sysaid.assignment.exception.InvalidAmountException;
 import com.sysaid.assignment.exception.InvalidKeyException;
 import com.sysaid.assignment.exception.InvalidOptionException;
@@ -58,9 +60,12 @@ public class TaskController {
 	public List<Task> getIncompleteTasks(
 		@RequestParam(name = "amount",required = false, defaultValue = "10") Integer amount,
 		@RequestParam(name = "type",required = false, defaultValue = "") String type,
-		@RequestParam(name = "option",required = false, defaultValue = "random") String option
+		@RequestParam(name = "option",required = false) String option
 	) throws InvalidAmountException , InvalidOptionException {
-			return this.taskManager.getTasks(amount, type, option);
+		if (option == null) {
+			option = OptionEnum.RANDOM.get();
+		}
+		return this.taskManager.getTasks(amount, type, option);
 	}
 
 	/**
@@ -91,7 +96,10 @@ public class TaskController {
 	@GetMapping("/tasks/{username}")
 	public List<Task> getAllTasks(
 		@PathVariable ("username") String username,
-		@RequestParam(name = "status",required = false, defaultValue = "") String status) throws InvalidStatusException {
+		@RequestParam(name = "status",required = false) String status) throws InvalidStatusException {
+			if (status == null) {
+				status = StatusEnum.ALL.get();
+			}
 			return this.taskManager.getUserTasks(username, status);
 	}
 
