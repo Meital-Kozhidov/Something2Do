@@ -46,4 +46,10 @@ public class GlobalExceptionHandler {
     (FetchTaskException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
     }    
+
+    @ExceptionHandler(UnexpectedException.class)
+    public ResponseEntity<String> UnexpectedException
+    (UnexpectedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }    
 }
