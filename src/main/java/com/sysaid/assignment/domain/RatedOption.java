@@ -10,13 +10,13 @@ import java.util.Random;
 public class RatedOption {
 
     private static final Random random = new Random();
-    private List<Task> tasks;
+    private final List<Task> tasks;
 
     public RatedOption(List<Task> tasks) {
       this.tasks = tasks;
     }
 
-    public List<Task> getRatedTasks(Integer amount) {
+    public List<Task> getRatedTasks(Integer amount) throws Exception {
       List<Task> ratedTasks = new ArrayList<Task>(); 
       for (int i = 0; i < amount; ++i) {
         ratedTasks.add(getRatedTask());
@@ -25,7 +25,7 @@ public class RatedOption {
       return ratedTasks;
     }
 
-    private Task getRatedTask() {
+    private Task getRatedTask() throws Exception {
         this.tasks.sort(Comparator.comparingInt(Task::getRating).reversed());
 
         int totalProbability = 100;
@@ -41,12 +41,12 @@ public class RatedOption {
 
         int randomNumber = random.nextInt(totalProbability);
 
-        for (int i = 0; i < probabilityRanges.length - 1; i++) {
-            if (randomNumber >= probabilityRanges[i] && randomNumber < probabilityRanges[i + 1]) {
-                return tasks.get(i);
-            }
-        }
+        return tasks.stream()
+            .filter(task -> randomNumber >= probabilityRanges[tasks.indexOf(task)] && 
+            randomNumber < probabilityRanges[tasks.indexOf(task) + 1])
+            .findFirst()
+            .orElseThrow(() -> new Exception());
 
-        return null; //TODO?
+       //TODO throw exception for null
     }
 }

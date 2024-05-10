@@ -3,8 +3,9 @@ package com.sysaid.assignment.controller;
 import com.sysaid.assignment.domain.Task;
 import com.sysaid.assignment.enums.OptionEnum;
 import com.sysaid.assignment.enums.StatusEnum;
-import com.sysaid.assignment.exception.InvalidAmountException;
 import com.sysaid.assignment.exception.NotFoundKeyException;
+import com.sysaid.assignment.exception.UnexpectedException;
+import com.sysaid.assignment.exception.InvalidAmountException;
 import com.sysaid.assignment.exception.InvalidOptionException;
 import com.sysaid.assignment.exception.InvalidStatusException;
 import com.sysaid.assignment.service.TaskServiceImpl;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 
 @RestController
-public class TasksController {
+public class TaskController {
 
 	private final TaskServiceImpl taskService;
 
@@ -34,7 +35,7 @@ public class TasksController {
 	 * constructor for dependency injection
 	 * @param taskService
 	 */
-	public TasksController(TaskServiceImpl taskService) {
+	public TaskController(TaskServiceImpl taskService) {
 		this.taskService = taskService;
 	}
 
@@ -48,6 +49,7 @@ public class TasksController {
 	 * @return list of tasks
 	 * @throws InvalidAmountException
 	 * @throws InvalidOptionException
+	 * @throws UnexpectedException
 	 */
 	@GetMapping("/tasks")
 	public ResponseEntity<List<Task>> getIncompleteTasks(

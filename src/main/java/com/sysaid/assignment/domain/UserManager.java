@@ -1,8 +1,7 @@
 package com.sysaid.assignment.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.sysaid.assignment.exception.DuplicatedUserException;
 import com.sysaid.assignment.exception.NotFoundUserException;
@@ -11,56 +10,41 @@ import com.sysaid.assignment.exception.NotFoundUserException;
 
 public class UserManager {
   private static UserManager instance;
-  private final List<User> users;
+  private final Map<String, User> usersByUsername;
 
   private UserManager() {
-    this.users = new ArrayList<User>();
+    this.usersByUsername = new HashMap<>();
   }
 
   public static UserManager getInstance() {
     if (instance == null) {
-      instance = new UserManager();
+        instance = new UserManager();
     }
-
     return instance;
   }
 
   /****************************************************************************/
 
-  public List<User> getUsers () {
-    return this.users;
-  }
-
   public User createUser(String username) {
-    if (isUserExist(username)) {
-      throw new DuplicatedUserException();
+    if (usersByUsername.containsKey(username)) {
+        throw new DuplicatedUserException();
     }
 
     User user = new User(username);
-    this.users.add(user);
-
+    usersByUsername.put(username, user);
     return user;
   }
 
   public User getUserByUsername(String username) {
-    try {
-      return this.getMatchingUsers(username).get(0);
-    } catch (Exception e) {
-      throw new NotFoundUserException();
+    User user = usersByUsername.get(username);
+    if (user == null) {
+        throw new NotFoundUserException();
     }
+    return user;
   }
 
-  /****************************************************************************/
-
-  private List<User> getMatchingUsers(String username) {
-   return this.users.stream()
-                .filter(item -> item.getName().equals(username))
-                .limit(1)
-                .collect(Collectors.toList()); 
+  public boolean userExists(String username) {
+    return usersByUsername.containsKey(username);
   }
-
-  private Boolean isUserExist(String username) {
-    return (this.getMatchingUsers(username).size() != 0);
-  }
-
 }
+

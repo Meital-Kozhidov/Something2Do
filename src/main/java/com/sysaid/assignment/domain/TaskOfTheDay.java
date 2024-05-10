@@ -7,17 +7,17 @@ import java.util.function.Supplier;
 
 public class TaskOfTheDay {
   private Task task;
-  private Supplier<Task> getNewTask;
+  private Supplier<Task> taskSupplier;
   private static TaskOfTheDay instance;
 
-  private TaskOfTheDay(Supplier<Task> getNewTask) {
-    this.getNewTask = getNewTask;
+  private TaskOfTheDay(Supplier<Task> taskSupplier) {
+    this.taskSupplier = taskSupplier;
     scheduleFixedDelayTask();
   }
 
-  public static TaskOfTheDay getInstance(Supplier<Task> getNewTask) {
+  public static TaskOfTheDay getInstance(Supplier<Task> taskSupplier) {
     if (instance == null) {
-      instance = new TaskOfTheDay(getNewTask);
+      instance = new TaskOfTheDay(taskSupplier);
     }
 
     return instance;
@@ -29,7 +29,7 @@ public class TaskOfTheDay {
 	 */
 	@Scheduled(cron = "*/10 * * * * *")
 	public void scheduleFixedDelayTask() {
-		this.task = this.getNewTask.get();
+		this.task = this.taskSupplier.get();
 	}
 
   /****************************************************************************/

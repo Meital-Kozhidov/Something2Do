@@ -13,10 +13,10 @@ import com.sysaid.assignment.service.UserServiceImpl;
 /******************************************************************************/
 
 @RestController
-public class UsersController {
+public class UserController {
   private final UserServiceImpl userService;
 
-  public UsersController(UserServiceImpl userService) {
+  public UserController(UserServiceImpl userService) {
     this.userService = userService;
   }
 

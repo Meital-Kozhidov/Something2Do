@@ -7,12 +7,12 @@ import java.util.List;
 
 public class User {
 
-  private String name;
+  private String username;
   private final List<Task> wishlistTasks;
   private final List<Task> completedTasks;
 
-  public User(String name) {
-    this.name = name;
+  public User(String username) {
+    this.username = username;
     this.wishlistTasks = new ArrayList<Task>();
     this.completedTasks = new ArrayList<Task>();
   }
@@ -20,10 +20,7 @@ public class User {
   /****************************************************************************/
 
   public String getName () {
-    return this.name;
-  }
-  public void setName(String name) {
-    this.name = name;
+    return this.username;
   }
 
   public List<Task> getWishlistTasks () {

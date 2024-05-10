@@ -3,6 +3,7 @@ package com.sysaid.assignment.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +15,7 @@ import com.sysaid.assignment.exception.InvalidOptionException;
 import com.sysaid.assignment.exception.InvalidStatusException;
 import com.sysaid.assignment.exception.NotFoundKeyException;
 import com.sysaid.assignment.exception.NotFoundUserException;
+import com.sysaid.assignment.exception.UnexpectedException;
 
 /******************************************************************************/
 
@@ -23,19 +25,31 @@ public class TaskManager {
   private final UserManager userManager;
   private final RatedOption ratedOption;
 
-  private TaskManager(Supplier<Task> getNewTask) {
+  private TaskManager(Supplier<Task> taskSupplier) {
     this.wishlistTasks = new ArrayList<Task>();
-    for (int i = 0; i < 20; ++i) {
-			this.wishlistTasks.add(getNewTask.get());
-		}
+
+    int tasksAmount = this.getTaskAmount();
+    for (int i = 0; i < tasksAmount; ++i) {
+      this.wishlistTasks.add(taskSupplier.get());
+    }
 
     this.ratedOption = new RatedOption(this.wishlistTasks);
     this.userManager = UserManager.getInstance();
   }
 
-  public static TaskManager getInstance(Supplier<Task> getNewTask) {
+  private int getTaskAmount() {
+    System.out.println("Enter amount of tasks to fetch:");
+    try (Scanner myObj = new Scanner(System.in)) {
+      return Integer.parseInt(myObj.nextLine());  
+    } catch (NumberFormatException e) {
+      System.out.println("Input is not a number. Using 20 instead");
+      return 20;
+    }
+  }
+
+  public static TaskManager getInstance(Supplier<Task> taskSupplier) {
     if (instance == null) {
-      instance = new TaskManager(getNewTask);
+      instance = new TaskManager(taskSupplier);
     }
 
     return instance;
@@ -43,11 +57,7 @@ public class TaskManager {
 
   /****************************************************************************/
 
-  public List<Task> getWishlistTasks () {
-    return this.wishlistTasks;
-  }
-
-  public List<Task> getTasks(Integer amount , String type, String option) throws InvalidOptionException, InvalidAmountException {
+  public List<Task> getTasks(Integer amount , String type, String option) throws InvalidOptionException, InvalidAmountException, UnexpectedException {
 
     try {
       OptionEnum optionEnum = OptionEnum.valueOf(option.toUpperCase());
@@ -62,25 +72,6 @@ public class TaskManager {
       }
     } catch (Exception e) {
       throw new InvalidOptionException();
-    }
-  }
-
-
-  private List<Task> getRandomTasks(Integer amount , String type) 
-  throws InvalidAmountException {
-    List<Task> filteredTasks = this.wishlistTasks;
-    if (!type.equals("")) {
-      filteredTasks = this.wishlistTasks.stream()
-              .filter(item -> type.equals(""))
-              .collect(Collectors.toList());
-    }
-
-		Collections.shuffle(filteredTasks);
-
-    try {
-      return filteredTasks.subList(0, amount);
-    } catch (Exception e) {
-      throw new InvalidAmountException();
     }
   }
 
@@ -134,13 +125,28 @@ public class TaskManager {
   /****************************************************************************/
   
   private Task findTaskByKey(String key) {
+    return this.wishlistTasks
+            .stream()
+            .filter(item -> item.getKey().equals(key))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundKeyException());
+  }
+  
+  private List<Task> getRandomTasks(Integer amount , String type) 
+  throws InvalidAmountException {
+    List<Task> filteredTasks = this.wishlistTasks;
+    if (!type.equals("")) {
+      filteredTasks = this.wishlistTasks.stream()
+              .filter(item -> item.getType().equals(type))
+              .collect(Collectors.toList());
+    }
+
+		Collections.shuffle(filteredTasks);
+
     try {
-      return this.wishlistTasks.stream()
-              .filter(item -> item.getKey().equals(key)).limit(1)
-              .collect(Collectors.toList())
-              .get(0);
-    } catch (Exception e) { //TODO: check what is thrown here
-      throw new NotFoundKeyException();
+      return filteredTasks.subList(0, amount);
+    } catch (Exception e) {
+      throw new InvalidAmountException();
     }
   }
 }
