@@ -23,9 +23,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidKeyException.class)
+    @ExceptionHandler(NotFoundKeyException.class)
     public ResponseEntity<String> handleInvalidKeyException
-    (InvalidKeyException ex) {
+    (NotFoundKeyException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(NotFoundUserException.class)
+    public ResponseEntity<String> NotFoundUserException
+    (NotFoundUserException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }    
+
+    @ExceptionHandler(DuplicatedUserException.class)
+    public ResponseEntity<String> DuplicatedUserException
+    (DuplicatedUserException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }    
 }

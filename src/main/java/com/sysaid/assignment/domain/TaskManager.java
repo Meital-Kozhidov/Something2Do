@@ -12,25 +12,25 @@ import com.sysaid.assignment.enums.StatusEnum;
 import com.sysaid.assignment.exception.InvalidAmountException;
 import com.sysaid.assignment.exception.InvalidOptionException;
 import com.sysaid.assignment.exception.InvalidStatusException;
-import com.sysaid.assignment.exception.InvalidKeyException;
+import com.sysaid.assignment.exception.NotFoundKeyException;
+import com.sysaid.assignment.exception.NotFoundUserException;
 
 /******************************************************************************/
 
 public class TaskManager {
   private static TaskManager instance;
   private final List<Task> wishlistTasks;
-  private final List<User> users;
-  private RatedOption ratedOption;
+  private final UserManager userManager;
+  private final RatedOption ratedOption;
 
   private TaskManager(Supplier<Task> getNewTask) {
-    this.users = new ArrayList<User>();
-
     this.wishlistTasks = new ArrayList<Task>();
     for (int i = 0; i < 20; ++i) {
 			this.wishlistTasks.add(getNewTask.get());
 		}
 
     this.ratedOption = new RatedOption(this.wishlistTasks);
+    this.userManager = UserManager.getInstance();
   }
 
   public static TaskManager getInstance(Supplier<Task> getNewTask) {
@@ -65,6 +65,17 @@ public class TaskManager {
     }
   }
 
+  private Task findTaskByKey(String key) {
+    try {
+      return this.wishlistTasks.stream()
+              .filter(item -> item.getKey().equals(key)).limit(1)
+              .collect(Collectors.toList())
+              .get(0);
+    } catch (Exception e) { //TODO: check what is thrown here
+      throw new NotFoundKeyException();
+    }
+  }
+
   private List<Task> getRandomTasks(Integer amount , String type) 
   throws InvalidAmountException {
     List<Task> filteredTasks = this.wishlistTasks;
@@ -83,18 +94,10 @@ public class TaskManager {
     }
   }
 
-  public void updateTaskStatus(String key, String userName, String status)  throws InvalidKeyException, InvalidAmountException {
-    User user = getUserByUsername(userName);
+  public void updateTaskStatus(String key, String username, String status)  throws NotFoundUserException, NotFoundKeyException, InvalidAmountException {
+    User user = this.userManager.getUserByUsername(username);
 
-    Task task;
-    try {
-      task = this.wishlistTasks.stream()
-              .filter(item -> item.getKey().equals(key)).limit(1)
-              .collect(Collectors.toList())
-              .get(0);
-    } catch (Exception e) { //TODO: check what is thrown here
-      throw new InvalidKeyException();
-    }
+    Task task = this.findTaskByKey(key);
 
     try {
       StatusEnum statusEnum = StatusEnum.valueOf(status.toUpperCase());
@@ -115,9 +118,9 @@ public class TaskManager {
     }
   }
 
-  public List<Task> getUserTasks(String userName, String status) 
-  throws InvalidStatusException {
-    User user = getUserByUsername(userName);
+  public List<Task> getUserTasks(String username, String status) 
+  throws InvalidStatusException, NotFoundUserException {
+    User user = this.userManager.getUserByUsername(username);
 
     try {
       StatusEnum statusEnum = StatusEnum.valueOf(status.toUpperCase());
@@ -136,31 +139,6 @@ public class TaskManager {
     } catch (Exception e) {
         throw new InvalidStatusException();
     }
-  }
-
-  /****************************************************************************/
-
-  /**
-   * Return 'User' instance of a user with the given username.
-   * If already exists, returns the instance. else, creates it.
-   * @param username
-   * @return User with given username
-   */
-  private User getUserByUsername(String username) {
-    List<User> users = this.users.stream()
-              .filter(item -> item.getName().equals(username))
-              .limit(1)
-              .collect(Collectors.toList());
-
-    User user;
-    if (users.size() == 0) {
-      user = new User(username);
-      this.users.add(user);
-    } else {
-      user = users.get(0);
-    }
-
-    return user;
   }
 }
 

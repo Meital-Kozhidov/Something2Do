@@ -6,7 +6,7 @@ import com.sysaid.assignment.domain.TaskOfTheDay;
 import com.sysaid.assignment.enums.OptionEnum;
 import com.sysaid.assignment.enums.StatusEnum;
 import com.sysaid.assignment.exception.InvalidAmountException;
-import com.sysaid.assignment.exception.InvalidKeyException;
+import com.sysaid.assignment.exception.NotFoundKeyException;
 import com.sysaid.assignment.exception.InvalidOptionException;
 import com.sysaid.assignment.exception.InvalidStatusException;
 import com.sysaid.assignment.service.TaskServiceImpl;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 
 @RestController
-public class TaskController {
+public class TasksController {
 
 	private final TaskServiceImpl taskService;
 	private final TaskOfTheDay taskOfTheDay;
@@ -36,7 +36,7 @@ public class TaskController {
 	 * constructor for dependency injection
 	 * @param taskService
 	 */
-	public TaskController(TaskServiceImpl taskService) {
+	public TasksController(TaskServiceImpl taskService) {
 		this.taskService = taskService;
 		this.taskOfTheDay = TaskOfTheDay.getInstance(this::getNewRandomTask);
 		this.taskManager = TaskManager.getInstance(this::getNewRandomTask);
@@ -54,7 +54,8 @@ public class TaskController {
 	 * @param amount tasks amount - default is 10
 	 * @param type task type to filter by - default is not filtered
 	 * @return list of tasks
-	 * @throws InvalidAmountException, InvalidOptionException
+	 * @throws InvalidAmountException
+	 * @throws InvalidOptionException
 	 */
 	@GetMapping("/tasks")
 	public List<Task> getIncompleteTasks(
@@ -73,14 +74,15 @@ public class TaskController {
 	 * @param username name of the user to update the task for
 	 * @param status status of the task - 'complete' or 'wishlist'
 	 * @param key task's key
-	 * @throws InvalidStatusException, InvalidKeyException 
+	 * @throws InvalidStatusException
+	 * @throws InvalidKeyException 
 	 */
 	@PatchMapping("/tasks/{username}")
 	public void updateTaskStatus(
 		@PathVariable ("username") String username, 
 		@RequestParam(name = "status", required = true) String status,
 		@RequestParam(name = "key", required = true) String key) 
-		throws InvalidStatusException, InvalidKeyException {
+		throws InvalidStatusException, NotFoundKeyException {
 			this.taskManager.updateTaskStatus(key, username, status);
 	}
 
