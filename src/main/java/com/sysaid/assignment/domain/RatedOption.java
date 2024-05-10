@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import com.sysaid.assignment.exception.UnexpectedException;
+
 /****************************************************************************/
 
 public class RatedOption {
@@ -16,7 +18,7 @@ public class RatedOption {
       this.tasks = tasks;
     }
 
-    public List<Task> getRatedTasks(Integer amount) throws Exception {
+    public List<Task> getRatedTasks(Integer amount) {
       List<Task> ratedTasks = new ArrayList<Task>(); 
       for (int i = 0; i < amount; ++i) {
         ratedTasks.add(getRatedTask());
@@ -25,7 +27,7 @@ public class RatedOption {
       return ratedTasks;
     }
 
-    private Task getRatedTask() throws Exception {
+    private Task getRatedTask() {
         this.tasks.sort(Comparator.comparingInt(Task::getRating).reversed());
 
         int totalProbability = 100;
@@ -41,12 +43,11 @@ public class RatedOption {
 
         int randomNumber = random.nextInt(totalProbability);
 
-        return tasks.stream()
-            .filter(task -> randomNumber >= probabilityRanges[tasks.indexOf(task)] && 
-            randomNumber < probabilityRanges[tasks.indexOf(task) + 1])
-            .findFirst()
-            .orElseThrow(() -> new Exception());
-
-       //TODO throw exception for null
+        return tasks
+              .stream()
+              .filter(task -> randomNumber >= probabilityRanges[tasks.indexOf(task)] && 
+              randomNumber < probabilityRanges[tasks.indexOf(task) + 1])
+              .findFirst()
+              .orElseThrow(() -> new UnexpectedException());
     }
 }

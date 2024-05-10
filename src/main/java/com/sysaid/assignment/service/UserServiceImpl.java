@@ -4,8 +4,6 @@ import org.springframework.stereotype.Service;
 
 import com.sysaid.assignment.domain.User;
 import com.sysaid.assignment.domain.UserManager;
-import com.sysaid.assignment.exception.DuplicatedUserException;
-
 /******************************************************************************/
 
 @Service
@@ -17,8 +15,7 @@ public class UserServiceImpl implements IUserService {
         this.userManager = UserManager.getInstance();
     }
 
-    @Override
-    public User createUser(String username) throws DuplicatedUserException {
+    public User createUser(String username) {
         return userManager.createUser(username);
     }
 }

@@ -14,8 +14,6 @@ import com.sysaid.assignment.exception.InvalidAmountException;
 import com.sysaid.assignment.exception.InvalidOptionException;
 import com.sysaid.assignment.exception.InvalidStatusException;
 import com.sysaid.assignment.exception.NotFoundKeyException;
-import com.sysaid.assignment.exception.NotFoundUserException;
-import com.sysaid.assignment.exception.UnexpectedException;
 
 /******************************************************************************/
 
@@ -57,8 +55,7 @@ public class TaskManager {
 
   /****************************************************************************/
 
-  public List<Task> getTasks(Integer amount , String type, String option) throws InvalidOptionException, InvalidAmountException, UnexpectedException {
-
+  public List<Task> getTasks(Integer amount , String type, String option) {
     try {
       OptionEnum optionEnum = OptionEnum.valueOf(option.toUpperCase());
 
@@ -75,7 +72,7 @@ public class TaskManager {
     }
   }
 
-  public void updateTaskStatus(String key, String username, String status)  throws NotFoundUserException, NotFoundKeyException, InvalidAmountException {
+  public void updateTaskStatus(String key, String username, String status) {
     User user = this.userManager.getUserByUsername(username);
 
     Task task = this.findTaskByKey(key);
@@ -99,8 +96,7 @@ public class TaskManager {
     }
   }
 
-  public List<Task> getUserTasks(String username, String status) 
-  throws InvalidStatusException, NotFoundUserException {
+  public List<Task> getUserTasks(String username, String status) {
     User user = this.userManager.getUserByUsername(username);
 
     try {
@@ -132,8 +128,7 @@ public class TaskManager {
             .orElseThrow(() -> new NotFoundKeyException());
   }
   
-  private List<Task> getRandomTasks(Integer amount , String type) 
-  throws InvalidAmountException {
+  private List<Task> getRandomTasks(Integer amount , String type) {
     List<Task> filteredTasks = this.wishlistTasks;
     if (!type.equals("")) {
       filteredTasks = this.wishlistTasks.stream()

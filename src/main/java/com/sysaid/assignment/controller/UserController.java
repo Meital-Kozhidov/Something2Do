@@ -32,7 +32,7 @@ public class UserController {
     @PostMapping("/users")
     public ResponseEntity<User> registerUser(
       @RequestParam(name = "username") String username
-    ) throws DuplicatedUserException {
+    ) {
       User createdUser = userService.createUser(username);
       return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }

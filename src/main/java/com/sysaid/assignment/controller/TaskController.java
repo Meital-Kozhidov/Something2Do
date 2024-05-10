@@ -22,19 +22,11 @@ import java.util.List;
 
 /******************************************************************************/
 
-/**
- * the controller is a basic structure and save some time on "dirty" work.
- */
-
 @RestController
 public class TaskController {
 
 	private final TaskServiceImpl taskService;
 
-	/**
-	 * constructor for dependency injection
-	 * @param taskService
-	 */
 	public TaskController(TaskServiceImpl taskService) {
 		this.taskService = taskService;
 	}
