@@ -31,7 +31,7 @@ public class TaskController {
 		this.taskService = taskService;
 	}
 
-	/****************************************************************************/
+	/**************************************************************************/
 
 	/**
 	 * Return incomplete tasks, filtered to the requested type,
@@ -39,9 +39,9 @@ public class TaskController {
 	 * @param amount tasks amount - default is 10
 	 * @param type task type to filter by - default is not filtered
 	 * @return list of tasks
-	 * @throws InvalidAmountException
-	 * @throws InvalidOptionException
-	 * @throws UnexpectedException
+	 * @throws InvalidAmountException Insufficient amount of fitted tasks
+	 * @throws InvalidOptionException Option is not valid
+	 * @throws UnexpectedException Cannot get rated option
 	 */
 	@GetMapping("/tasks")
 	public ResponseEntity<List<Task>> getIncompleteTasks(
@@ -52,7 +52,7 @@ public class TaskController {
 		if (option == null) {
 			option = OptionEnum.RANDOM.get();
 		}
-			return ResponseEntity.ok(this.taskService.getTasks(amount, type, option));
+		return ResponseEntity.ok(this.taskService.getTasks(amount, type,option));
 	}
 
 	/**
@@ -60,17 +60,17 @@ public class TaskController {
 	 * @param username name of the user to update the task for
 	 * @param status status of the task - 'complete' or 'wishlist'
 	 * @param key task's key
-	 * @throws InvalidStatusException
-	 * @throws InvalidKeyException 
+	 * @throws InvalidStatusException Status is not valid
+	 * @throws InvalidKeyException Key is not valid
 	 */
 	@PatchMapping("/tasks/{username}")
 	public ResponseEntity<String> updateTaskStatus(
 		@PathVariable ("username") String username, 
 		@RequestParam(name = "status", required = true) String status,
 		@RequestParam(name = "key", required = true) String key) 
-		throws InvalidStatusException, NotFoundKeyException {
-			this.taskService.updateTaskStatus(key, username, status);
-			return ResponseEntity.status(HttpStatus.OK).body("updated");
+	throws InvalidStatusException, NotFoundKeyException {
+		this.taskService.updateTaskStatus(key, username, status);
+		return ResponseEntity.status(HttpStatus.OK).body("Updated");
 	}
 
 
@@ -80,16 +80,17 @@ public class TaskController {
 	 * @param status status of the task - 'complete' or 'wishlist'.
 	 * default is no filter.
 	 * @return user's tasks
-	 * @throws InvalidStatusException
+	 * @throws InvalidStatusException Status is not valid
 	 */
 	@GetMapping("/tasks/{username}")
 	public ResponseEntity<List<Task>> getUserTasks(
 		@PathVariable ("username") String username,
-		@RequestParam(name = "status",required = false) String status) throws InvalidStatusException {
-			if (status == null) {
-				status = StatusEnum.ALL.get();
-			}
-			return ResponseEntity.ok(this.taskService.getUserTasks(username, status));
+		@RequestParam(name = "status",required = false) String status) 
+	throws InvalidStatusException {
+		if (status == null) {
+			status = StatusEnum.ALL.get();
+		}
+		return ResponseEntity.ok(this.taskService.getUserTasks(username, status));
 	}
 
 	/****************************************************************************/

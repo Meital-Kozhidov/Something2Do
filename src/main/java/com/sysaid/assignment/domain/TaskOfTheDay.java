@@ -27,7 +27,7 @@ public class TaskOfTheDay {
 	 * Scheduled job to run everyday at midnight, fetching a new task 
 	 * and updating the task of the day
 	 */
-	@Scheduled(cron = "*/10 * * * * *")
+	@Scheduled(cron = "0 0 * * *")
 	public void scheduleFixedDelayTask() {
 		this.task = this.taskSupplier.get();
 	}

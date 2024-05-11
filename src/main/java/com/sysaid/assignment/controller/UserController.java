@@ -24,7 +24,6 @@ public class UserController {
   
   /**
      * Register a user with the given username to the system.
-     *
      * @param username the requested username
      * @return the registered User
      * @throws DuplicatedUserException if the username is already in use
