@@ -22,11 +22,12 @@ public class TaskServiceImpl implements ITaskService {
     private final String baseUrl;
 
     public TaskServiceImpl(
-        @Value("${external.boredapi.baseURL}") String baseUrl
+        @Value("${external.boredapi.baseURL}") String baseUrl,
+        @Value("${tasks.numberOfTasks}") Integer taskAmount
     ) {
         this.baseUrl = baseUrl;
         this.taskOfTheDay = TaskOfTheDay.getInstance(this::getRandomTask);
-        this.taskManager = TaskManager.getInstance(this::getRandomTask);
+        this.taskManager = TaskManager.getInstance(this::getRandomTask, taskAmount);
     }
 
     public Task getRandomTask() {
@@ -35,7 +36,6 @@ public class TaskServiceImpl implements ITaskService {
         RestTemplate template = new RestTemplate();
         ResponseEntity<Task> responseEntity = template.getForEntity(endpointUrl, Task.class);
 
-        //TODO: what happens if it's thrown?
         if (!responseEntity.getStatusCode().is2xxSuccessful()) {
             throw new FetchTaskException();
         } 

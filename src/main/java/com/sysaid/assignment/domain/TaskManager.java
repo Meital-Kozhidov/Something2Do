@@ -3,7 +3,6 @@ package com.sysaid.assignment.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,11 +22,10 @@ public class TaskManager {
   private final UserManager userManager;
   private final RatedOption ratedOption;
 
-  private TaskManager(Supplier<Task> taskSupplier) {
+  private TaskManager(Supplier<Task> taskSupplier, Integer taskAmount) {
     this.wishlistTasks = new ArrayList<Task>();
 
-    int tasksAmount = this.getTaskAmount();
-    for (int i = 0; i < tasksAmount; ++i) {
+    for (int i = 0; i < taskAmount; ++i) {
       this.wishlistTasks.add(taskSupplier.get());
     }
 
@@ -35,19 +33,9 @@ public class TaskManager {
     this.userManager = UserManager.getInstance();
   }
 
-  private int getTaskAmount() {
-    System.out.println("Enter amount of tasks to fetch:");
-    try (Scanner myObj = new Scanner(System.in)) {
-      return Integer.parseInt(myObj.nextLine());  
-    } catch (NumberFormatException e) {
-      System.out.println("Input is not a number. Using 20 instead");
-      return 20;
-    }
-  }
-
-  public static TaskManager getInstance(Supplier<Task> taskSupplier) {
+  public static TaskManager getInstance(Supplier<Task> taskSupplier, Integer tasksAmount) {
     if (instance == null) {
-      instance = new TaskManager(taskSupplier);
+      instance = new TaskManager(taskSupplier, tasksAmount);
     }
 
     return instance;
@@ -109,7 +97,7 @@ public class TaskManager {
         case ALL:
           return Stream.concat(user.getCompletedTasks().stream(), 
                     user.getWishlistTasks().stream())
-                    .toList();
+                    .collect(Collectors.toList());
         default:
           throw new InvalidStatusException();
       }
