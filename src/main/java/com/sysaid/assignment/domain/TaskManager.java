@@ -73,7 +73,7 @@ public class TaskManager {
           task.incrementRating(2);
           break;
         case WISHLIST:
-          user.setTaskAsCompleted(task);
+          user.setTaskAsWishList(task);
           task.incrementRating(2);
           break;
         default:

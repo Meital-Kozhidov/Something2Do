@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundUserException.class)
     public ResponseEntity<String> NotFoundUserException
     (NotFoundUserException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }    
 
     @ExceptionHandler(DuplicatedUserException.class)
