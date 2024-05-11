@@ -6,8 +6,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class AssignmentApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+
+        /* Placeholder for tests not related to controllers */
+
+        @Test
+        void contextLoads() {
+        }
 
 }

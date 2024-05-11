@@ -2,6 +2,7 @@ package com.sysaid.assignment.domain;
 
 import java.io.Serializable;
 
+/****************************************************************************/
 
 /**
  * representing simple task
@@ -17,6 +18,11 @@ public class Task implements Serializable {
 	private Float price;
 	private String link;
 	private String key;
+	private Integer rating;
+
+	public Task() {
+		this.rating = 0;
+	}
 
 
 	public static long getSerialVersionUID() {
@@ -79,8 +85,12 @@ public class Task implements Serializable {
 		this.key = key;
 	}
 
+	public Integer getRating() {
+		return rating;
+	}
 
-
-
+	public void incrementRating(Integer amount) {
+		this.rating += amount;
+	}
 }
 

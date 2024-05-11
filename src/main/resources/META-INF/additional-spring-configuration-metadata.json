@@ -3,6 +3,12 @@
     {
       "name": "external.boredapi.baseURL",
       "type": "java.lang.String",
-      "description": "Description for external.boredapi.baseURL."
-  }
-] }
+      "description": "External API url to fetch tasks"
+    },
+    {
+      "name": "tasks.numberOfTasks",
+      "type": "java.lang.String",
+      "description": "Amount of tasks to fetch"
+    }
+  ]
+}
